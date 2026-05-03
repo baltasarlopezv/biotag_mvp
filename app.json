@@ -1,0 +1,40 @@
+{
+  "expo": {
+    "name": "BioTag",
+    "slug": "biotag",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/biotag-logo.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/biotag-logo.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#f6fbf8"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/biotag-logo.png",
+        "backgroundColor": "#f6fbf8"
+      },
+      "permissions": [
+        "CAMERA"
+      ]
+    },
+    "plugins": [
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "BioTag usa la camara para escanear codigos de barras de alimentos."
+        }
+      ],
+      "expo-asset",
+      "expo-font"
+    ]
+  }
+}
