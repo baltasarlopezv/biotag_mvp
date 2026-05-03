@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+# biotag_mvp
+En este repositorio está configurado el entorno de desarrollo del proyecto BioTag
+=======
 # BioTag React Native
 
 App mobile en Expo + backend Express + PostgreSQL basada en BioTag.
@@ -27,3 +31,4 @@ El esquema PostgreSQL esta en `src/server/schema.sql` y replica las tablas del d
 - `perfil_salud_dieta`
 - `perfil_salud_alergia`
 - `historial_escaneo`
+>>>>>>> 66b3a39 (primer  commit)

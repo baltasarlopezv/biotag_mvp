@@ -190,6 +190,18 @@ export const styles = StyleSheet.create({
     gap: 12,
     padding: 14
   },
+  historyProductCard: {
+    backgroundColor: "#fff",
+    borderColor: "#e1ece7",
+    borderRadius: 20,
+    borderWidth: 1,
+    gap: 12,
+    padding: 14
+  },
+  resultSummary: {
+    flexDirection: "row",
+    gap: 12
+  },
   resultCompact: { borderWidth: 0, padding: 0 },
   resultIcon: {
     alignItems: "center",
@@ -198,11 +210,81 @@ export const styles = StyleSheet.create({
     justifyContent: "center",
     width: 44
   },
+  productImage: {
+    backgroundColor: "#f8faf8",
+    borderColor: "#e1ece7",
+    borderRadius: 14,
+    borderWidth: 1,
+    height: 58,
+    width: 58
+  },
   resultBody: { flex: 1 },
   productName: { color: "#123c2f", fontSize: 16, fontWeight: "900" },
   brand: { color: "#71847d", fontSize: 13, fontWeight: "700", marginTop: 2 },
   resultLabel: { fontSize: 14, fontWeight: "900", marginTop: 8 },
   explanation: { color: "#50645d", fontSize: 13, lineHeight: 19, marginTop: 4 },
+  recommendationBox: {
+    backgroundColor: "#f8faf8",
+    borderRadius: 16,
+    borderWidth: 1,
+    gap: 6,
+    padding: 12
+  },
+  recommendationHeader: { alignItems: "center", flexDirection: "row", gap: 7 },
+  recommendationTitle: { fontSize: 14, fontWeight: "900" },
+  recommendationText: { color: "#50645d", fontSize: 13, lineHeight: 19 },
+  alertList: { gap: 3, marginTop: 3 },
+  alertText: { color: "#9f1239", fontSize: 12, fontWeight: "700", lineHeight: 17 },
+  detailSection: {
+    borderColor: "#e1ece7",
+    borderRadius: 16,
+    borderWidth: 1,
+    gap: 10,
+    padding: 12
+  },
+  detailSectionHeader: {
+    alignItems: "center",
+    flexDirection: "row",
+    gap: 8,
+    justifyContent: "space-between"
+  },
+  detailTitleRow: { alignItems: "center", flexDirection: "row", gap: 7 },
+  detailSectionTitle: { color: "#1f2933", fontSize: 15, fontWeight: "900" },
+  detailMeta: { color: "#71847d", fontSize: 12, fontWeight: "700" },
+  detailText: { color: "#60736c", fontSize: 14, lineHeight: 20 },
+  categoryPill: {
+    backgroundColor: "#eef6f1",
+    borderRadius: 999,
+    color: "#60736c",
+    fontSize: 12,
+    fontWeight: "800",
+    maxWidth: 130,
+    overflow: "hidden",
+    paddingHorizontal: 10,
+    paddingVertical: 4
+  },
+  nutritionRow: {
+    borderBottomColor: "#edf2ef",
+    borderBottomWidth: 1,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    paddingVertical: 8
+  },
+  nutritionLabel: { color: "#1f2933", flex: 1, fontSize: 14, fontWeight: "700" },
+  nutritionValue: { color: "#1f2933", fontSize: 14, fontWeight: "900", textAlign: "right" },
+  allergenWrap: { flexDirection: "row", flexWrap: "wrap", gap: 8 },
+  allergenPill: {
+    backgroundColor: "#fff7ed",
+    borderColor: "#fed7aa",
+    borderRadius: 999,
+    borderWidth: 1,
+    color: "#c2410c",
+    fontSize: 12,
+    fontWeight: "900",
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    textTransform: "capitalize"
+  },
   tabs: {
     alignItems: "center",
     backgroundColor: "#fff",
