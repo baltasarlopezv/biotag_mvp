@@ -2,6 +2,10 @@
   "name": "biotag-react-native",
   "version": "1.0.0",
   "private": true,
+  "engines": {
+    "node": ">=20.0.0",
+    "npm": ">=10.0.0"
+  },
   "main": "node_modules/expo/AppEntry.js",
   "scripts": {
     "start": "node scripts/start-expo.js",
@@ -10,7 +14,12 @@
     "web": "node scripts/start-expo.js --web",
     "web:export": "expo export --platform web",
     "api": "node src/server/index.js",
-    "db:setup": "node src/server/setup-db.js"
+    "db:setup": "node src/server/setup-db.js",
+    "db:up": "docker compose -f infra/docker/docker-compose.yml up -d",
+    "db:down": "docker compose -f infra/docker/docker-compose.yml down",
+    "db:logs": "docker compose -f infra/docker/docker-compose.yml logs -f postgres",
+    "env:check": "node scripts/check-env.js",
+    "bootstrap": "node scripts/bootstrap.js"
   },
   "dependencies": {
     "@expo/metro-runtime": "~6.1.2",
