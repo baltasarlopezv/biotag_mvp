@@ -1,0 +1,10 @@
+{
+  "compilerOptions": {
+    "skipLibCheck": true
+  },
+  "exclude": [
+    "node_modules",
+    "app/**/node_modules"
+  ],
+  "extends": "expo/tsconfig.base"
+}

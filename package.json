@@ -29,11 +29,12 @@
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
-    "expo": "^54.0.34",
+    "expo": "~54.0.34",
     "expo-asset": "~12.0.13",
     "expo-camera": "~17.0.10",
     "expo-font": "~14.0.11",
     "expo-linear-gradient": "~15.0.8",
+    "expo-modules-core": "~3.0.30",
     "expo-status-bar": "~3.0.9",
     "express": "^4.21.2",
     "jsonwebtoken": "^9.0.2",
@@ -45,6 +46,8 @@
     "react-native-web": "^0.21.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.25.2"
+    "@babel/core": "^7.25.2",
+    "@types/react": "~19.1.10",
+    "expo-module-scripts": "^55.0.2"
   }
 }
