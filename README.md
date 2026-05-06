@@ -95,14 +95,13 @@ Schema file: `src/server/schema.sql`
 - `npm run web`: start Expo for web
 - `npm run api`: start Express API
 - `npm run api:tunnel`: expose the API with ngrok and save the public URL
-- `npm start`: start Expo
-- `npm run api`: start Express API
-- `npm run api:tunnel`: expose the API with ngrok and save the public URL
 - `npm run env:check`: validate required environment vars
 - `npm run db:setup`: apply schema and seeds to local PostgreSQL
 - `npm run bootstrap`: one-shot initial setup for new machines
 - `npm run db:up`: (optional) start PostgreSQL with Docker Compose
 - `npm run db:down`: (optional) stop Docker PostgreSQL container
+
+## Git Workflow
 
 - Daily development branch: `dev`
 - Stable integration branch: `main`

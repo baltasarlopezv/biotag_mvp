@@ -32,6 +32,19 @@ function copyEnvIfMissing() {
   }
 }
 
+function checkDocker() {
+  const result = spawnSync("docker", ["info"], {
+    stdio: "ignore",
+    shell: process.platform === "win32"
+  });
+
+  if (result.status !== 0) {
+    console.error("Docker is not available or the Docker daemon is not running.");
+    console.error("Open Docker Desktop (or start the Docker service) and run npm run bootstrap again.");
+    process.exit(1);
+  }
+}
+
 function main() {
   console.log("== BioTag bootstrap ==");
   copyEnvIfMissing();
@@ -40,6 +53,7 @@ function main() {
   run("npm", ["run", "env:check"]);
 
   console.log("Starting local database (Docker)...");
+  checkDocker();
   run("npm", ["run", "db:up"]);
 
   console.log("Applying database schema...");

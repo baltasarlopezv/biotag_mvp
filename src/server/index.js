@@ -20,6 +20,11 @@ const port = process.env.API_PORT || 4000;
 app.use(cors());
 app.use(express.json());
 
+app.use((req, _res, next) => {
+  console.log(`${req.method} ${req.originalUrl}`);
+  next();
+});
+
 const webDistPath = path.join(__dirname, "../../dist");
 const webIndexPath = path.join(webDistPath, "index.html");
 
@@ -167,6 +172,6 @@ app.use((error, _req, res, _next) => {
   res.status(500).json({ error: "Error interno del servidor" });
 });
 
-app.listen(port, () => {
-  console.log(`BioTag API listening on http://localhost:${port}`);
+app.listen(port, '0.0.0.0', () => {
+  console.log(`BioTag API listening on http://0.0.0.0:${port}`);
 });
