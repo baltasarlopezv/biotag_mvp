@@ -18,6 +18,57 @@ Monolithic development environment based on the current main architecture:
 - npm 10+
 - PostgreSQL running locally on port 5432
 
+## Prerequisites Installation
+
+Before running the project, install and configure the following tools.
+
+### 1) ngrok (required for iPhone / Expo Go tunnel flow)
+
+Install ngrok:
+
+- macOS: https://dashboard.ngrok.com/get-started/setup/macos
+- Windows: https://dashboard.ngrok.com/get-started/setup/windows
+
+Configure your ngrok auth token after installation:
+
+1. Sign in at https://dashboard.ngrok.com/
+2. Copy your auth token from the dashboard
+3. Run:
+
+```bash
+ngrok config add-authtoken <YOUR_NGROK_TOKEN>
+```
+
+If your installed version expects the legacy syntax, use:
+
+```bash
+ngrok authtoken <YOUR_NGROK_TOKEN>
+```
+
+Quick check:
+
+```bash
+ngrok version
+```
+
+### 2) PostgreSQL 15
+
+Install PostgreSQL 15:
+
+- macOS: https://www.postgresql.org/download/macosx/
+- Windows: https://www.postgresql.org/download/windows/
+
+After installation, ensure PostgreSQL is running on port `5432` and that your `DATABASE_URL` in `.env` points to that instance.
+
+### 3) pgAdmin 4 (version 9.14)
+
+Install pgAdmin 4 version 9.14:
+
+- macOS: https://www.pgadmin.org/download/pgadmin-4-macos/
+- Windows: https://www.pgadmin.org/download/pgadmin-4-windows/
+
+pgAdmin is optional for runtime, but recommended for inspecting and managing your local database.
+
 ## Quick Start
 
 One-shot first setup (macOS and Windows):
@@ -49,6 +100,10 @@ Windows (PowerShell) manual copy alternative:
 Copy-Item .env.example .env
 ```
 
+For standard initialization, `bootstrap` and `env:check` handle the required `.env` values automatically from `.env.example`.
+
+Only change `.env` manually if you need a custom setup (for example Android emulator network settings).
+
 Run services in separate terminals:
 
 ```bash
@@ -71,12 +126,6 @@ npm run start:tunnel
 
 Do not use `npm run ios` unless you want the iOS simulator and have Xcode installed.
 
-For Android emulator, set this in `.env`:
-
-```bash
-EXPO_PUBLIC_API_URL=http://10.0.2.2:4000
-```
-
 ## Database Commands
 
 For your local PostgreSQL instance:
@@ -90,19 +139,13 @@ Schema file: `src/server/schema.sql`
 ## Scripts
 
 - `npm start`: start Expo
-- `npm run android`: start Expo for Android
-- `npm run ios`: start Expo for iOS
-- `npm run web`: start Expo for web
-- `npm run api`: start Express API
-- `npm run api:tunnel`: expose the API with ngrok and save the public URL
-- `npm start`: start Expo
 - `npm run api`: start Express API
 - `npm run api:tunnel`: expose the API with ngrok and save the public URL
 - `npm run env:check`: validate required environment vars
 - `npm run db:setup`: apply schema and seeds to local PostgreSQL
 - `npm run bootstrap`: one-shot initial setup for new machines
 
-
 - Daily development branch: `dev`
 - Stable integration branch: `main`
 - Use PRs from `dev` to `main` for controlled integration
+x
