@@ -50,6 +50,13 @@ const hostArgs = hostMode === "tunnel"
     ? ["--lan"]
     : [];
 
+if (hostMode === "tunnel") {
+  const expoNgrokPreloadPath = path.join(process.cwd(), "scripts/expo-ngrok-system-bin.js");
+  const existingNodeOptions = env.NODE_OPTIONS ? `${env.NODE_OPTIONS} ` : "";
+  env.NODE_OPTIONS = `${existingNodeOptions}--require=${JSON.stringify(expoNgrokPreloadPath)}`;
+  console.log("[Expo] Using system ngrok for Expo tunnel");
+}
+
 const args = ["expo", "start", "--clear", "--port", "8081", ...hostArgs, ...process.argv.slice(2)];
 const command = process.platform === "win32" ? "npx.cmd" : "npx";
 
