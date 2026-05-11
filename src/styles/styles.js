@@ -168,9 +168,40 @@ export const styles = StyleSheet.create({
     textAlign: "center",
     width: "100%"
   },
+  inputHelp: { color: "#71847d", fontSize: 12, fontWeight: "700", marginTop: -8 },
   cameraWrap: { backgroundColor: "#000", flex: 1 },
-  cameraOverlay: { flex: 1, justifyContent: "space-between", padding: 24, paddingTop: 60 },
+  cameraOverlay: { alignItems: "center", flex: 1, justifyContent: "space-between", padding: 24, paddingTop: 60 },
+  cameraHeader: { alignItems: "center", gap: 8 },
   cameraTitle: { alignSelf: "center", color: "#fff", fontSize: 18, fontWeight: "900" },
+  cameraHint: {
+    backgroundColor: "#0008",
+    borderRadius: 999,
+    color: "#e8fff4",
+    fontSize: 13,
+    fontWeight: "800",
+    overflow: "hidden",
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    textAlign: "center"
+  },
+  scanFrame: {
+    borderColor: "#ffffff66",
+    borderRadius: 18,
+    height: 170,
+    justifyContent: "center",
+    maxWidth: 340,
+    width: "92%"
+  },
+  scanCorner: {
+    borderColor: "#39e58f",
+    height: 42,
+    position: "absolute",
+    width: 42
+  },
+  scanCornerTopLeft: { borderLeftWidth: 4, borderTopWidth: 4, left: 0, top: 0 },
+  scanCornerTopRight: { borderRightWidth: 4, borderTopWidth: 4, right: 0, top: 0 },
+  scanCornerBottomLeft: { borderBottomWidth: 4, borderLeftWidth: 4, bottom: 0, left: 0 },
+  scanCornerBottomRight: { borderBottomWidth: 4, borderRightWidth: 4, bottom: 0, right: 0 },
   closeButton: {
     alignItems: "center",
     alignSelf: "center",

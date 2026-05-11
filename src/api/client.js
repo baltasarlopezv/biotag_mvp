@@ -1,12 +1,14 @@
 import { Platform } from "react-native";
 
+const configuredApiUrl = process.env.EXPO_PUBLIC_API_URL;
 const API_URL =
-  Platform.OS === "web"
+  configuredApiUrl ||
+  (Platform.OS === "web"
     ? globalThis.location?.origin || "http://localhost:4000"
-    : process.env.EXPO_PUBLIC_API_URL || "http://localhost:4000";
+    : "http://localhost:4000");
 
 console.log("[API Client] Environment variables:", {
-  EXPO_PUBLIC_API_URL: process.env.EXPO_PUBLIC_API_URL,
+  EXPO_PUBLIC_API_URL: configuredApiUrl,
   computed_API_URL: API_URL,
   platform: Platform.OS
 });
