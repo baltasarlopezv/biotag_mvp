@@ -69,6 +69,26 @@ Install pgAdmin 4 version 9.14:
 
 pgAdmin is optional for runtime, but recommended for inspecting and managing your local database.
 
+### 4) Clerk
+
+Create a Clerk application and copy these keys into `.env`:
+
+```bash
+EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_...
+CLERK_SECRET_KEY=sk_test_...
+```
+
+In the Clerk dashboard, enable Native API for Expo/React Native and make sure email/password sign-up is enabled.
+
+### 5) Gemini
+
+Create a Gemini API key in Google AI Studio and copy it into `.env`:
+
+```bash
+GEMINI_API_KEY=...
+GEMINI_MODEL=gemini-2.5-flash-lite
+```
+
 ## Quick Start
 
 One-shot first setup (macOS and Windows):

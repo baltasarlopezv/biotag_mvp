@@ -195,9 +195,9 @@ async function createScanHistory({ userId, barcode, product, analysis }) {
       nutrition.azucares_porcion,
       nutrition.fibra_porcion,
       nutrition.proteinas_porcion,
-      null,
-      null,
-      toJsonb([]),
+      analysis.score_ia,
+      analysis.recomendacion_ia,
+      toJsonb(analysis.alertas_ia || []),
       analysis.resultado,
       analysis.explicacion,
       toJsonb(createProductSnapshot(product))

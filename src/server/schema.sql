@@ -1,11 +1,20 @@
 create table if not exists usuario (
   id_usuario serial primary key,
+  clerk_user_id varchar(255) unique,
   email varchar(255) not null unique,
   nombre varchar(120),
   apellido varchar(120),
-  password_hash varchar(255) not null,
+  password_hash varchar(255),
   created_at timestamp not null default now()
 );
+
+alter table usuario
+  add column if not exists clerk_user_id varchar(255),
+  alter column password_hash drop not null;
+
+create unique index if not exists idx_usuario_clerk_user_id
+  on usuario(clerk_user_id)
+  where clerk_user_id is not null;
 
 create table if not exists perfil_salud (
   id_perfil serial primary key,
