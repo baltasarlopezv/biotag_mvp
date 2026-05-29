@@ -36,7 +36,23 @@ function NutritionRow({ label, value }) {
 }
 
 export function ScanResult({ item, compact }) {
-  const colors = resultColors[item.resultado] || resultColors.Apto;
+  const isAnalysisPending = item.ia_estado === "pendiente";
+  const hasAnalysisError = item.ia_estado === "error";
+  const displayResult = isAnalysisPending
+    ? "Thinking..."
+    : hasAnalysisError
+      ? "Sin recomendacion IA"
+      : item.resultado || "Producto encontrado";
+  const explanation = isAnalysisPending
+    ? "Producto encontrado. Nuestro modelo esta preparando la recomendacion."
+    : hasAnalysisError
+      ? item.ia_error || "No se pudo generar la recomendacion con nuestro modelo."
+      : item.explicacion;
+  const colors = isAnalysisPending
+    ? resultColors.Analizando
+    : hasAnalysisError
+      ? resultColors.Error
+      : resultColors[item.resultado] || resultColors.Apto;
   const allergens = Array.isArray(item.alergenos_tags)
     ? item.alergenos_tags
     : item.alergenos
@@ -66,8 +82,8 @@ export function ScanResult({ item, compact }) {
       <View style={styles.resultBody}>
         <Text style={styles.productName}>{item.nombre_producto || "Producto"}</Text>
         <Text style={styles.brand}>{item.marca || item.codigo_barras}</Text>
-        <Text style={[styles.resultLabel, { color: colors.fg }]}>{item.resultado}</Text>
-        <Text style={styles.explanation}>{item.explicacion}</Text>
+        <Text style={[styles.resultLabel, { color: colors.fg }]}>{displayResult}</Text>
+        <Text style={styles.explanation}>{explanation}</Text>
       </View>
     </View>
   );
@@ -82,13 +98,17 @@ export function ScanResult({ item, compact }) {
         <View style={styles.recommendationHeader}>
           <Ionicons name={colors.icon} size={18} color={colors.fg} />
           <Text style={[styles.recommendationTitle, { color: colors.fg }]}>
-            {item.score_ia !== null && item.score_ia !== undefined
+            {isAnalysisPending
+              ? "Thinking..."
+              : item.score_ia !== null && item.score_ia !== undefined
               ? `Score ${item.score_ia}/100`
-              : item.resultado}
+              : displayResult}
           </Text>
         </View>
         <Text style={styles.recommendationText}>
-          {item.recomendacion_ia || item.explicacion || "Todavia no hay recomendacion cargada."}
+          {isAnalysisPending
+            ? "Analizando ingredientes, perfil y tabla nutricional."
+            : item.recomendacion_ia || explanation || "Todavia no hay recomendacion cargada."}
         </Text>
         {aiAlerts.length > 0 ? (
           <View style={styles.alertList}>

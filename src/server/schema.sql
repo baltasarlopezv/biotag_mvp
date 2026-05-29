@@ -93,6 +93,8 @@ create table if not exists historial_escaneo (
   score_ia int,
   recomendacion_ia text,
   alertas_ia jsonb not null default '[]'::jsonb,
+  ia_estado varchar(20) not null default 'pendiente',
+  ia_error text,
   resultado varchar(40),
   explicacion text,
   datos_producto_snapshot jsonb,
@@ -128,7 +130,18 @@ alter table historial_escaneo
   add column if not exists proteinas_porcion decimal(10,3),
   add column if not exists score_ia int,
   add column if not exists recomendacion_ia text,
-  add column if not exists alertas_ia jsonb not null default '[]'::jsonb;
+  add column if not exists alertas_ia jsonb not null default '[]'::jsonb,
+  add column if not exists ia_estado varchar(20) not null default 'pendiente',
+  add column if not exists ia_error text;
+
+update historial_escaneo
+set ia_estado = 'listo'
+where ia_estado = 'pendiente'
+  and (
+    resultado is not null
+    or recomendacion_ia is not null
+    or score_ia is not null
+  );
 
 create index if not exists idx_historial_usuario_fecha
   on historial_escaneo(id_usuario, fecha desc);

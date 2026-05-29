@@ -136,6 +136,13 @@ export const styles = StyleSheet.create({
   emptyTitle: { color: "#123c2f", fontSize: 18, fontWeight: "900", marginTop: 10 },
   emptyText: { color: "#71847d", fontSize: 14, marginTop: 4, textAlign: "center" },
   sectionTitle: { color: "#123c2f", fontSize: 18, fontWeight: "900" },
+  recentScanList: { gap: 12 },
+  recentScanItem: {
+    borderTopColor: "#edf2ef",
+    borderTopWidth: 1,
+    paddingTop: 12
+  },
+  recentScanItemFirst: { borderTopWidth: 0, paddingTop: 0 },
   screenTitle: { color: "#123c2f", fontSize: 28, fontWeight: "900" },
   screenSubtitle: { color: "#71847d", fontSize: 15, lineHeight: 21, marginTop: -8 },
   profileStats: { gap: 10 },
