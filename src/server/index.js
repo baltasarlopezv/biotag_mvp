@@ -5,9 +5,9 @@ const express = require("express");
 const path = require("path");
 const { analyzeProduct } = require("./product-analysis");
 const { asyncHandler } = require("./async-handler");
-const { auth, signToken } = require("./auth");
+const { clerkAuth, signToken, verifyClerkSession } = require("./auth");
 const { createScanHistory, getUserHistory } = require("./history-service");
-const { createUser, getUserByEmail } = require("./user-service");
+const { createUser, getUserByEmail, upsertClerkUser } = require("./user-service");
 const { getCatalogs } = require("./catalog-service");
 const { fetchProduct } = require("./product-service");
 const { getProfile, saveProfile } = require("./profile-service");
@@ -105,15 +105,29 @@ app.post("/auth/login", asyncHandler(async (req, res) => {
   res.json({ user, token: signToken(user) });
 }));
 
-app.get("/catalogos", auth, asyncHandler(async (_req, res) => {
+app.post("/auth/sync", verifyClerkSession, asyncHandler(async (req, res) => {
+  const { email, nombre, apellido } = req.body;
+  if (!email) return res.status(400).json({ error: "Email requerido" });
+
+  const user = await upsertClerkUser({
+    clerkUserId: req.clerkClaims.sub,
+    email,
+    nombre,
+    apellido
+  });
+
+  res.json({ user });
+}));
+
+app.get("/catalogos", clerkAuth, asyncHandler(async (_req, res) => {
   res.json(await getCatalogs());
 }));
 
-app.get("/perfil", auth, asyncHandler(async (req, res) => {
+app.get("/perfil", clerkAuth, asyncHandler(async (req, res) => {
   res.json({ perfil: await getProfile(req.user.id_usuario) });
 }));
 
-app.put("/perfil", auth, asyncHandler(async (req, res) => {
+app.put("/perfil", clerkAuth, asyncHandler(async (req, res) => {
   const {
     edad,
     peso,
@@ -136,19 +150,13 @@ app.put("/perfil", auth, asyncHandler(async (req, res) => {
   res.json({ perfil });
 }));
 
-app.post("/scan", auth, asyncHandler(async (req, res) => {
+app.post("/scan", clerkAuth, asyncHandler(async (req, res) => {
   const { codigo_barras } = req.body;
   if (!codigo_barras) return res.status(400).json({ error: "Falta codigo_barras" });
 
   const profile = await getProfile(req.user.id_usuario);
   const product = await fetchProduct(codigo_barras);
-  const analysis = analyzeProduct(
-    {
-      ingredients: product.ingredients_text,
-      nutriments: product.nutriments
-    },
-    profile
-  );
+  const analysis = await analyzeProduct(product, profile);
 
   const item = await createScanHistory({
     userId: req.user.id_usuario,
@@ -160,7 +168,7 @@ app.post("/scan", auth, asyncHandler(async (req, res) => {
   res.json({ item });
 }));
 
-app.get("/historial", auth, asyncHandler(async (req, res) => {
+app.get("/historial", clerkAuth, asyncHandler(async (req, res) => {
   res.json({ items: await getUserHistory(req.user.id_usuario) });
 }));
 

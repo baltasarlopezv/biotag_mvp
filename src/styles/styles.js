@@ -25,6 +25,11 @@ export const styles = StyleSheet.create({
     shadowOpacity: 0.08,
     shadowRadius: 18
   },
+  authHint: { color: "#60736c", fontSize: 14, fontWeight: "700", lineHeight: 20 },
+  authLink: { alignItems: "center", paddingVertical: 10 },
+  authLinkText: { color: "#0b6b4f", fontSize: 14, fontWeight: "800" },
+  configErrorTitle: { color: "#123c2f", fontSize: 18, fontWeight: "900", textAlign: "center" },
+  configErrorText: { color: "#60736c", fontSize: 14, lineHeight: 20, textAlign: "center" },
   segment: { backgroundColor: "#eef6f1", borderRadius: 16, flexDirection: "row", padding: 4 },
   segmentItem: { alignItems: "center", borderRadius: 12, flex: 1, paddingVertical: 11 },
   segmentActive: { backgroundColor: "#fff" },
@@ -133,6 +138,65 @@ export const styles = StyleSheet.create({
   sectionTitle: { color: "#123c2f", fontSize: 18, fontWeight: "900" },
   screenTitle: { color: "#123c2f", fontSize: 28, fontWeight: "900" },
   screenSubtitle: { color: "#71847d", fontSize: 15, lineHeight: 21, marginTop: -8 },
+  profileStats: { gap: 10 },
+  profileStat: {
+    backgroundColor: "#f8faf8",
+    borderColor: "#dce9e3",
+    borderRadius: 14,
+    borderWidth: 1,
+    padding: 14
+  },
+  profileStatLabel: { color: "#71847d", fontSize: 12, fontWeight: "800", marginBottom: 4 },
+  profileStatValue: { color: "#123c2f", fontSize: 18, fontWeight: "900" },
+  profileEmptyText: { color: "#71847d", fontSize: 13, fontWeight: "700" },
+  profileActions: { gap: 10 },
+  wheelField: {
+    backgroundColor: "#f8faf8",
+    borderColor: "#dce9e3",
+    borderRadius: 14,
+    borderWidth: 1,
+    flex: 1,
+    gap: 4,
+    minHeight: 50,
+    paddingHorizontal: 14,
+    paddingVertical: 10
+  },
+  wheelFieldLabel: { color: "#71847d", fontSize: 12, fontWeight: "800" },
+  wheelFieldValue: { color: "#173b2f", fontSize: 16, fontWeight: "900" },
+  wheelOverlay: {
+    backgroundColor: "#0007",
+    flex: 1,
+    justifyContent: "flex-end"
+  },
+  wheelPanel: {
+    backgroundColor: "#fff",
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
+    maxHeight: "62%",
+    padding: 18
+  },
+  wheelHeader: {
+    alignItems: "center",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: 10
+  },
+  wheelDoneButton: {
+    backgroundColor: "#eef8f3",
+    borderRadius: 999,
+    paddingHorizontal: 14,
+    paddingVertical: 8
+  },
+  wheelDoneText: { color: "#0b6b4f", fontSize: 13, fontWeight: "900" },
+  wheelList: { gap: 6, paddingBottom: 20 },
+  wheelOption: {
+    alignItems: "center",
+    borderRadius: 14,
+    paddingVertical: 13
+  },
+  wheelOptionActive: { backgroundColor: "#0b6b4f" },
+  wheelOptionText: { color: "#496159", fontSize: 18, fontWeight: "800" },
+  wheelOptionTextActive: { color: "#fff" },
   chipWrap: { flexDirection: "row", flexWrap: "wrap", gap: 9 },
   chip: {
     backgroundColor: "#f5faf7",

@@ -8,7 +8,14 @@ if (!fs.existsSync(envPath)) {
   process.exit(1);
 }
 
-const requiredKeys = ["API_PORT", "JWT_SECRET", "DATABASE_URL", "EXPO_PUBLIC_API_URL"];
+const requiredKeys = [
+  "API_PORT",
+  "DATABASE_URL",
+  "EXPO_PUBLIC_API_URL",
+  "EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY",
+  "CLERK_SECRET_KEY",
+  "GEMINI_API_KEY"
+];
 const raw = fs.readFileSync(envPath, "utf8");
 
 const values = {};
