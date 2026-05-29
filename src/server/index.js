@@ -6,7 +6,7 @@ const path = require("path");
 const { analyzeProduct } = require("./product-analysis");
 const { asyncHandler } = require("./async-handler");
 const { clerkAuth, signToken, verifyClerkSession } = require("./auth");
-const { createScanHistory, getUserHistory } = require("./history-service");
+const { createScanHistory, getUserHistory, markScanAnalysisError, updateScanAnalysis } = require("./history-service");
 const { createUser, getUserByEmail, upsertClerkUser } = require("./user-service");
 const { getCatalogs } = require("./catalog-service");
 const { fetchProduct } = require("./product-service");
@@ -150,22 +150,39 @@ app.put("/perfil", clerkAuth, asyncHandler(async (req, res) => {
   res.json({ perfil });
 }));
 
+async function runScanAnalysis({ userId, historyId, product, profile }) {
+  try {
+    const analysis = await analyzeProduct(product, profile);
+    await updateScanAnalysis({ userId, historyId, analysis });
+  } catch (error) {
+    console.error("No se pudo generar el analisis IA", error);
+    try {
+      await markScanAnalysisError({ userId, historyId, error });
+    } catch (updateError) {
+      console.error("No se pudo guardar el error del analisis IA", updateError);
+    }
+  }
+}
+
 app.post("/scan", clerkAuth, asyncHandler(async (req, res) => {
   const { codigo_barras } = req.body;
   if (!codigo_barras) return res.status(400).json({ error: "Falta codigo_barras" });
 
   const profile = await getProfile(req.user.id_usuario);
   const product = await fetchProduct(codigo_barras);
-  const analysis = await analyzeProduct(product, profile);
-
   const item = await createScanHistory({
     userId: req.user.id_usuario,
     barcode: codigo_barras,
-    product,
-    analysis
+    product
   });
 
-  res.json({ item });
+  res.status(202).json({ item });
+  void runScanAnalysis({
+    userId: req.user.id_usuario,
+    historyId: item.id_historial,
+    product,
+    profile
+  });
 }));
 
 app.get("/historial", clerkAuth, asyncHandler(async (req, res) => {

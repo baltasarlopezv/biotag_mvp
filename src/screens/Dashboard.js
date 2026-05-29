@@ -4,7 +4,7 @@ import { ScanResult } from "../components/ScanResult";
 import { styles } from "../styles/styles";
 
 export function Dashboard({ history, profile, onScanPress }) {
-  const last = history[0];
+  const recentItems = history.slice(0, 5);
   return (
     <ScrollView contentContainerStyle={styles.content}>
       <View style={styles.hero}>
@@ -31,10 +31,19 @@ export function Dashboard({ history, profile, onScanPress }) {
         </View>
       </View>
 
-      {last ? (
+      {recentItems.length > 0 ? (
         <View style={styles.card}>
-          <Text style={styles.sectionTitle}>Ultimo resultado</Text>
-          <ScanResult item={last} compact />
+          <Text style={styles.sectionTitle}>Ultimos 5 resultados</Text>
+          <View style={styles.recentScanList}>
+            {recentItems.map((item, index) => (
+              <View
+                key={item.id_historial || `${item.codigo_barras || "scan"}-${index}`}
+                style={[styles.recentScanItem, index === 0 && styles.recentScanItemFirst]}
+              >
+                <ScanResult item={item} compact />
+              </View>
+            ))}
+          </View>
         </View>
       ) : (
         <View style={styles.emptyCard}>

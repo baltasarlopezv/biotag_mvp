@@ -142,6 +142,7 @@ function toJsonb(value) {
 }
 
 async function createScanHistory({ userId, barcode, product, analysis }) {
+  const safeAnalysis = analysis || {};
   const nutrition = getNutrition(product);
   const history = await query(
     `insert into historial_escaneo
@@ -152,7 +153,7 @@ async function createScanHistory({ userId, barcode, product, analysis }) {
        carbohidratos_100g, azucares_100g, fibra_100g, proteinas_100g,
        porcion, calorias_porcion, grasas_porcion, grasas_saturadas_porcion,
        sodio_porcion, sal_porcion, carbohidratos_porcion, azucares_porcion,
-       fibra_porcion, proteinas_porcion, score_ia, recomendacion_ia, alertas_ia,
+       fibra_porcion, proteinas_porcion, score_ia, recomendacion_ia, alertas_ia, ia_estado, ia_error,
        resultado, explicacion, datos_producto_snapshot
      )
      values (
@@ -162,8 +163,8 @@ async function createScanHistory({ userId, barcode, product, analysis }) {
        $15, $16, $17, $18,
        $19, $20, $21, $22,
        $23, $24, $25, $26,
-       $27, $28, $29, $30, $31,
-       $32, $33, $34
+       $27, $28, $29, $30, $31, $32, $33,
+       $34, $35, $36
      )
      returning *`,
     [
@@ -195,16 +196,57 @@ async function createScanHistory({ userId, barcode, product, analysis }) {
       nutrition.azucares_porcion,
       nutrition.fibra_porcion,
       nutrition.proteinas_porcion,
-      analysis.score_ia,
-      analysis.recomendacion_ia,
-      toJsonb(analysis.alertas_ia || []),
-      analysis.resultado,
-      analysis.explicacion,
+      safeAnalysis.score_ia ?? null,
+      safeAnalysis.recomendacion_ia ?? null,
+      toJsonb(safeAnalysis.alertas_ia || []),
+      safeAnalysis.ia_estado || "pendiente",
+      safeAnalysis.ia_error || null,
+      safeAnalysis.resultado ?? null,
+      safeAnalysis.explicacion ?? null,
       toJsonb(createProductSnapshot(product))
     ]
   );
 
   return history.rows[0];
+}
+
+async function updateScanAnalysis({ userId, historyId, analysis }) {
+  const result = await query(
+    `update historial_escaneo
+     set score_ia = $3,
+         recomendacion_ia = $4,
+         alertas_ia = $5,
+         resultado = $6,
+         explicacion = $7,
+         ia_estado = 'listo',
+         ia_error = null
+     where id_usuario = $1 and id_historial = $2
+     returning *`,
+    [
+      userId,
+      historyId,
+      analysis.score_ia,
+      analysis.recomendacion_ia,
+      toJsonb(analysis.alertas_ia || []),
+      analysis.resultado,
+      analysis.explicacion
+    ]
+  );
+
+  return result.rows[0] || null;
+}
+
+async function markScanAnalysisError({ userId, historyId, error }) {
+  const result = await query(
+    `update historial_escaneo
+     set ia_estado = 'error',
+         ia_error = $3
+     where id_usuario = $1 and id_historial = $2
+     returning *`,
+    [userId, historyId, `${error?.message || error || "No se pudo generar la recomendacion"}`]
+  );
+
+  return result.rows[0] || null;
 }
 
 async function getUserHistory(userId) {
@@ -218,5 +260,7 @@ async function getUserHistory(userId) {
 
 module.exports = {
   createScanHistory,
+  updateScanAnalysis,
+  markScanAnalysisError,
   getUserHistory
 };

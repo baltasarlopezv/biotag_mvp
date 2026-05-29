@@ -18,6 +18,10 @@ function getPrimaryEmail(user) {
   return user?.primaryEmailAddress?.emailAddress || user?.emailAddresses?.[0]?.emailAddress || "";
 }
 
+function isAnalysisPending(item) {
+  return item?.ia_estado === "pendiente";
+}
+
 function MissingClerkConfigScreen() {
   return (
     <LinearGradient colors={["#e9f8ef", "#f9fbf8"]} style={styles.authBg}>
@@ -112,6 +116,25 @@ function AppContent() {
       cancelled = true;
     };
   }, [clerkEmail, clerkFirstName, clerkLastName, clerkUserId, isLoaded, isSignedIn]);
+
+  useEffect(() => {
+    if (!isSignedIn || booting || !history.some(isAnalysisPending)) return undefined;
+
+    let cancelled = false;
+    const intervalId = setInterval(async () => {
+      try {
+        const data = await authRequest("/historial");
+        if (!cancelled) setHistory(data.items);
+      } catch (error) {
+        console.log("[ScanAnalysis] No se pudo refrescar el historial", error);
+      }
+    }, 2500);
+
+    return () => {
+      cancelled = true;
+      clearInterval(intervalId);
+    };
+  }, [authRequest, booting, history, isSignedIn]);
 
   async function saveProfile(payload) {
     try {
