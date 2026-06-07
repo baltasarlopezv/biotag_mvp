@@ -1,11 +1,17 @@
 {
   "expo": {
     "name": "BioTag",
-    "slug": "biotag",
+    "slug": "biotafg",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/biotag-logo.png",
     "userInterfaceStyle": "light",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/7391750e-df48-4170-ba9f-95613d7f7886"
+    },
     "splash": {
       "image": "./assets/biotag-logo.png",
       "resizeMode": "contain",
@@ -15,15 +21,19 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.biotag.app"
     },
     "android": {
+      "package": "com.biotag.app",
       "adaptiveIcon": {
         "foregroundImage": "./assets/biotag-logo.png",
         "backgroundColor": "#f6fbf8"
       },
       "permissions": [
-        "CAMERA"
+        "CAMERA",
+        "android.permission.CAMERA",
+        "android.permission.RECORD_AUDIO"
       ]
     },
     "plugins": [
@@ -37,6 +47,12 @@
       "expo-font",
       "@clerk/expo",
       "expo-secure-store"
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "7391750e-df48-4170-ba9f-95613d7f7886"
+      }
+    },
+    "owner": "geronimo45s-organization"
   }
 }

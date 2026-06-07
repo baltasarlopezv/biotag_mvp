@@ -23,7 +23,7 @@ const { getProfile, saveProfile } = require("./profile-service");
 dotenv.config();
 
 const app = express();
-const port = process.env.API_PORT || 4000;
+const port = process.env.PORT || process.env.API_PORT || 4000;
 const DELETE_ACCOUNT_CONFIRMATION = "eliminar la cuenta";
 
 app.use(cors());
