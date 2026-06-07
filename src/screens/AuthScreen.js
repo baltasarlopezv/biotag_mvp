@@ -1,6 +1,7 @@
 import { useSignIn, useSignUp } from "@clerk/expo";
+import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
-import { useState } from "react";
+import { memo, useState } from "react";
 import {
   Alert,
   Image,
@@ -15,9 +16,58 @@ import { PrimaryButton } from "../components/PrimaryButton";
 import { logoUrl } from "../constants/assets";
 import { styles } from "../styles/styles";
 
+const AUTH_GRADIENT_COLORS = ["#e9f8ef", "#f9fbf8"];
+const PASSWORD_RULES = [
+  { label: "Minimo 8 caracteres", test: (value) => value.length >= 8 },
+  { label: "Una letra mayuscula", test: (value) => /[A-Z]/.test(value) },
+  { label: "Una letra minuscula", test: (value) => /[a-z]/.test(value) },
+  { label: "Un numero", test: (value) => /\d/.test(value) },
+  { label: "Un simbolo", test: (value) => /[^A-Za-z0-9]/.test(value) }
+];
+
 function getClerkError(error, fallback) {
   return error?.errors?.[0]?.longMessage || error?.errors?.[0]?.message || error?.message || fallback;
 }
+
+const AuthHeader = memo(function AuthHeader() {
+  return (
+    <>
+      <Image source={{ uri: logoUrl }} style={styles.logo} />
+      <Text style={styles.authTitle}>BioTag</Text>
+      <Text style={styles.authSubtitle}>
+        Tu asistente nutricional personalizado para escanear alimentos y recibir alertas segun tu perfil.
+      </Text>
+    </>
+  );
+});
+
+const ClerkCaptchaSlot = memo(function ClerkCaptchaSlot() {
+  return <View nativeID="clerk-captcha" />;
+});
+
+const PasswordCriteria = memo(function PasswordCriteria({ checks }) {
+  return (
+    <View style={styles.passwordCriteria}>
+      {checks.map((check) => (
+        <View key={check.label} style={styles.passwordCriteriaItem}>
+          <Ionicons
+            name={check.passed ? "checkbox-outline" : "square-outline"}
+            size={18}
+            color={check.passed ? "#0b6b4f" : "#9db8ae"}
+          />
+          <Text
+            style={[
+              styles.passwordCriteriaText,
+              check.passed && styles.passwordCriteriaTextPassed
+            ]}
+          >
+            {check.label}
+          </Text>
+        </View>
+      ))}
+    </View>
+  );
+});
 
 export function AuthScreen() {
   const { signIn } = useSignIn();
@@ -30,6 +80,13 @@ export function AuthScreen() {
   const [code, setCode] = useState("");
   const [needsEmailCode, setNeedsEmailCode] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+
+  const passwordChecks = PASSWORD_RULES.map((rule) => ({
+    label: rule.label,
+    passed: rule.test(password)
+  }));
+  const passwordMeetsRules = passwordChecks.every((check) => check.passed);
 
   async function finalize(flow) {
     if (flow.status !== "complete") return false;
@@ -41,6 +98,14 @@ export function AuthScreen() {
     try {
       setLoading(true);
       if (mode === "register") {
+        if (!passwordMeetsRules) {
+          Alert.alert(
+            "Contrasena incompleta",
+            "Completa todos los criterios de la contrasena antes de crear la cuenta."
+          );
+          return;
+        }
+
         const { error } = await signUp.password({
           emailAddress: email,
           password,
@@ -93,19 +158,16 @@ export function AuthScreen() {
     setMode(nextMode);
     setCode("");
     setNeedsEmailCode(false);
+    setShowPassword(false);
   }
 
   return (
-    <LinearGradient colors={["#e9f8ef", "#f9fbf8"]} style={styles.authBg}>
+    <LinearGradient colors={AUTH_GRADIENT_COLORS} style={styles.authBg}>
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : undefined}
         style={styles.authWrap}
       >
-        <Image source={{ uri: logoUrl }} style={styles.logo} />
-        <Text style={styles.authTitle}>BioTag</Text>
-        <Text style={styles.authSubtitle}>
-          Tu asistente nutricional personalizado para escanear alimentos y recibir alertas segun tu perfil.
-        </Text>
+        <AuthHeader />
 
         <View style={styles.authCard}>
           <View style={styles.segment}>
@@ -131,11 +193,12 @@ export function AuthScreen() {
             <>
               <Text style={styles.authHint}>Te enviamos un codigo a {email}.</Text>
               <TextInput
+                autoCorrect={false}
                 keyboardType="number-pad"
                 placeholder="Codigo de verificacion"
                 value={code}
                 onChangeText={setCode}
-                maxLength={20}
+                maxLength={40}
                 style={styles.input}
               />
               <PrimaryButton
@@ -151,48 +214,73 @@ export function AuthScreen() {
           ) : (
             <>
               {mode === "register" ? (
-            <View style={styles.row}>
-              <TextInput
-                placeholder="Nombre"
-                value={nombre}
-                onChangeText={setNombre}
-                maxLength={20}
-                style={[styles.input, styles.rowInput]}
-              />
-              <TextInput
-                placeholder="Apellido"
-                value={apellido}
-                onChangeText={setApellido}
-                maxLength={20}
-                style={[styles.input, styles.rowInput]}
-              />
-            </View>
+                <View style={styles.row}>
+                  <TextInput
+                    autoCorrect={false}
+                    placeholder="Nombre"
+                    value={nombre}
+                    onChangeText={setNombre}
+                    maxLength={40}
+                    style={[styles.input, styles.rowInput]}
+                  />
+                  <TextInput
+                    autoCorrect={false}
+                    placeholder="Apellido"
+                    value={apellido}
+                    onChangeText={setApellido}
+                    maxLength={40}
+                    style={[styles.input, styles.rowInput]}
+                  />
+                </View>
               ) : null}
 
               <TextInput
                 autoCapitalize="none"
+                autoComplete="email"
+                autoCorrect={false}
                 keyboardType="email-address"
                 placeholder="Email"
+                textContentType="emailAddress"
                 value={email}
                 onChangeText={setEmail}
-                maxLength={20}
+                maxLength={120}
                 style={styles.input}
               />
-              <TextInput
-                placeholder="Contrasena"
-                secureTextEntry
-                value={password}
-                onChangeText={setPassword}
-                maxLength={20}
-                style={styles.input}
-              />
+              <View style={styles.passwordInputWrap}>
+                <TextInput
+                  autoCapitalize="none"
+                  autoComplete="password"
+                  autoCorrect={false}
+                  placeholder="Contrasena"
+                  secureTextEntry={!showPassword}
+                  textContentType={mode === "register" ? "newPassword" : "password"}
+                  value={password}
+                  onChangeText={setPassword}
+                  maxLength={128}
+                  style={[styles.input, styles.passwordInput]}
+                />
+                <Pressable
+                  accessibilityLabel={showPassword ? "Ocultar contrasena" : "Mostrar contrasena"}
+                  accessibilityRole="button"
+                  onPress={() => setShowPassword((current) => !current)}
+                  style={styles.passwordToggle}
+                >
+                  <Ionicons
+                    name={showPassword ? "eye-off-outline" : "eye-outline"}
+                    size={22}
+                    color="#60736c"
+                  />
+                </Pressable>
+              </View>
+              {mode === "register" ? <PasswordCriteria checks={passwordChecks} /> : null}
               <PrimaryButton
                 icon="arrow-forward"
                 label={mode === "register" ? "Crear perfil" : "Entrar"}
+                disabled={mode === "register" && !passwordMeetsRules}
                 loading={loading}
                 onPress={submit}
               />
-              {mode === "register" ? <View nativeID="clerk-captcha" /> : null}
+              {mode === "register" ? <ClerkCaptchaSlot /> : null}
             </>
           )}
         </View>

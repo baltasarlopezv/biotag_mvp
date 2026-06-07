@@ -25,6 +25,11 @@ export async function request(path, options = {}, token) {
     }
   });
   const data = await response.json().catch(() => ({}));
-  if (!response.ok) throw new Error(data.error || "Error de conexion");
+  if (!response.ok) {
+    const error = new Error(data.error || "Error de conexion");
+    error.status = response.status;
+    error.code = data.code;
+    throw error;
+  }
   return data;
 }

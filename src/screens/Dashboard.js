@@ -5,6 +5,7 @@ import { styles } from "../styles/styles";
 
 export function Dashboard({ history, profile, onScanPress }) {
   const recentItems = history.slice(0, 5);
+
   return (
     <ScrollView contentContainerStyle={styles.content}>
       <View style={styles.hero}>

@@ -62,10 +62,16 @@ function buildProductContext(product) {
     nombre: getProductName(product),
     marca: product.brands || "",
     categoria: product.categories?.split(",")?.[0]?.trim() || "",
+    categoria_tags: (product.categories_tags || []).map(cleanTag),
     porcion: product.serving_size || "",
     ingredientes: getIngredients(product),
     alergenos_declarados: product.allergens || "",
     alergenos_tags: (product.allergens_tags || []).map(cleanTag),
+    trazas_declaradas: product.traces || "",
+    trazas_tags: (product.traces_tags || []).map(cleanTag),
+    sellos_certificaciones: product.labels || "",
+    sellos_tags: (product.labels_tags || []).map(cleanTag),
+    niveles_nutricionales: compactObject(product.nutrient_levels || {}),
     tabla_nutricional_100g: compactObject({
       calorias: toNumber(nutriments["energy-kcal_100g"]),
       grasas_g: toNumber(nutriments.fat_100g),
@@ -111,9 +117,7 @@ function parseJsonResponse(text) {
 }
 
 function normalizeAnalysis(rawAnalysis) {
-  const resultado = VALID_RESULTS.has(rawAnalysis.resultado)
-    ? rawAnalysis.resultado
-    : "Precaucion";
+  const resultado = VALID_RESULTS.has(rawAnalysis.resultado) ? rawAnalysis.resultado : "Precaucion";
   const recomendacion = `${rawAnalysis.recomendacion || rawAnalysis.explicacion || ""}`.trim();
   const alertas = Array.isArray(rawAnalysis.alertas)
     ? rawAnalysis.alertas.map((item) => `${item}`.trim()).filter(Boolean).slice(0, 4)
@@ -154,7 +158,7 @@ async function analyzeProduct(product, profile) {
             text:
               "Sos un asistente de salud alimentaria para una app de escaneo de productos. " +
               "Usa solo los datos enviados. No diagnostiques ni des consejo medico. " +
-              "Evalua compatibilidad entre perfil de salud, alergias, dietas y tabla nutricional. " +
+              "Evalua compatibilidad entre perfil de salud, alergias, dietas y datos del producto. " +
               "Devolve solo JSON valido con: resultado ('Apto', 'Precaucion' o 'No recomendado'), " +
               "score (0 a 100), recomendacion (maximo 180 caracteres, breve y accionable), " +
               "alertas (array de hasta 4 strings cortos)."

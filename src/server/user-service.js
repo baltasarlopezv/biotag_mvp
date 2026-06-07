@@ -1,10 +1,18 @@
 const { query } = require("./db");
 
+const CURRENT_TERMS_VERSION = "1.0";
+const CURRENT_PRIVACY_VERSION = "1.0";
+
+const USER_PUBLIC_FIELDS = `
+  id_usuario, clerk_user_id, email, nombre, apellido, created_at,
+  terms_accepted_at, terms_version, privacy_accepted_at, privacy_version
+`;
+
 async function createUser({ email, passwordHash, nombre, apellido }) {
   const result = await query(
     `insert into usuario (email, nombre, apellido, password_hash)
      values ($1, $2, $3, $4)
-     returning id_usuario, email, nombre, apellido, created_at`,
+     returning ${USER_PUBLIC_FIELDS}`,
     [email.toLowerCase(), nombre || "", apellido || "", passwordHash]
   );
 
@@ -21,7 +29,7 @@ async function upsertClerkUser({ clerkUserId, email, nombre, apellido }) {
            nombre = coalesce(nullif($3, ''), nombre),
            apellido = coalesce(nullif($4, ''), apellido)
        where clerk_user_id = $1
-       returning id_usuario, clerk_user_id, email, nombre, apellido, created_at`,
+       returning ${USER_PUBLIC_FIELDS}`,
       [clerkUserId, normalizedEmail, nombre || "", apellido || ""]
     );
 
@@ -37,7 +45,7 @@ async function upsertClerkUser({ clerkUserId, email, nombre, apellido }) {
            apellido = coalesce(nullif(excluded.apellido, ''), usuario.apellido)
        where usuario.clerk_user_id is null
           or usuario.clerk_user_id = excluded.clerk_user_id
-     returning id_usuario, clerk_user_id, email, nombre, apellido, created_at`,
+     returning ${USER_PUBLIC_FIELDS}`,
     [clerkUserId, normalizedEmail, nombre || "", apellido || ""]
   );
 
@@ -50,7 +58,7 @@ async function upsertClerkUser({ clerkUserId, email, nombre, apellido }) {
 
 async function getUserByClerkId(clerkUserId) {
   const result = await query(
-    `select id_usuario, clerk_user_id, email, nombre, apellido, created_at
+    `select ${USER_PUBLIC_FIELDS}
      from usuario
      where clerk_user_id = $1`,
     [clerkUserId]
@@ -67,9 +75,49 @@ async function getUserByEmail(email) {
   return result.rows[0];
 }
 
+async function acceptCurrentLegal({ userId }) {
+  const result = await query(
+    `update usuario
+     set terms_accepted_at = now(),
+         terms_version = $2,
+         privacy_accepted_at = now(),
+         privacy_version = $3
+     where id_usuario = $1
+     returning ${USER_PUBLIC_FIELDS}`,
+    [userId, CURRENT_TERMS_VERSION, CURRENT_PRIVACY_VERSION]
+  );
+
+  return result.rows[0];
+}
+
+async function deleteUserById(userId) {
+  const result = await query(
+    `delete from usuario
+     where id_usuario = $1
+     returning id_usuario, clerk_user_id, email`,
+    [userId]
+  );
+
+  return result.rows[0] || null;
+}
+
+function hasAcceptedCurrentLegal(user) {
+  return Boolean(
+    user?.terms_accepted_at &&
+    user?.privacy_accepted_at &&
+    user?.terms_version === CURRENT_TERMS_VERSION &&
+    user?.privacy_version === CURRENT_PRIVACY_VERSION
+  );
+}
+
 module.exports = {
+  CURRENT_PRIVACY_VERSION,
+  CURRENT_TERMS_VERSION,
+  acceptCurrentLegal,
   createUser,
+  deleteUserById,
   getUserByClerkId,
+  hasAcceptedCurrentLegal,
   upsertClerkUser,
   getUserByEmail
 };

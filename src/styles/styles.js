@@ -47,6 +47,33 @@ export const styles = StyleSheet.create({
     paddingHorizontal: 14,
     paddingVertical: 13
   },
+  passwordInputWrap: { position: "relative" },
+  passwordInput: { paddingRight: 50 },
+  passwordToggle: {
+    alignItems: "center",
+    bottom: 0,
+    justifyContent: "center",
+    position: "absolute",
+    right: 4,
+    top: 0,
+    width: 44
+  },
+  passwordCriteria: {
+    backgroundColor: "#f8faf8",
+    borderColor: "#dce9e3",
+    borderRadius: 14,
+    borderWidth: 1,
+    gap: 7,
+    padding: 12
+  },
+  passwordCriteriaItem: {
+    alignItems: "center",
+    flexDirection: "row",
+    gap: 8,
+    minHeight: 20
+  },
+  passwordCriteriaText: { color: "#60736c", flex: 1, fontSize: 12, fontWeight: "700" },
+  passwordCriteriaTextPassed: { color: "#0b6b4f" },
   button: {
     alignItems: "center",
     backgroundColor: "#0b6b4f",
@@ -61,6 +88,10 @@ export const styles = StyleSheet.create({
     backgroundColor: "#eef8f3",
     borderColor: "#cfe7dc",
     borderWidth: 1
+  },
+  buttonDisabled: {
+    backgroundColor: "#9db8ae",
+    opacity: 0.8
   },
   buttonText: { color: "#fff", fontSize: 16, fontWeight: "800" },
   buttonTextSecondary: { color: "#0b6b4f" },
@@ -337,6 +368,63 @@ export const styles = StyleSheet.create({
   recommendationText: { color: "#50645d", fontSize: 13, lineHeight: 19 },
   alertList: { gap: 3, marginTop: 3 },
   alertText: { color: "#9f1239", fontSize: 12, fontWeight: "700", lineHeight: 17 },
+  dangerZone: {
+    borderColor: "#fecaca",
+    backgroundColor: "#fffafa"
+  },
+  dangerTitle: { color: "#7f1d1d", fontSize: 18, fontWeight: "900" },
+  dangerText: { color: "#7f1d1d", fontSize: 13, lineHeight: 19 },
+  dangerButton: {
+    alignItems: "center",
+    backgroundColor: "#b42318",
+    borderRadius: 16,
+    flexDirection: "row",
+    gap: 8,
+    justifyContent: "center",
+    minHeight: 50,
+    paddingHorizontal: 18
+  },
+  dangerButtonDisabled: {
+    backgroundColor: "#d9a6a1",
+    opacity: 0.8
+  },
+  dangerButtonText: { color: "#fff", fontSize: 15, fontWeight: "900" },
+  dangerModalTitle: { color: "#7f1d1d", fontSize: 20, fontWeight: "900" },
+  deleteModalOverlay: {
+    backgroundColor: "#0007",
+    flex: 1,
+    justifyContent: "center",
+    padding: 18
+  },
+  deleteModalPanel: {
+    backgroundColor: "#fff",
+    borderRadius: 24,
+    gap: 14,
+    maxHeight: "86%",
+    padding: 18
+  },
+  deletePhrase: {
+    backgroundColor: "#fef2f2",
+    borderColor: "#fecaca",
+    borderRadius: 12,
+    borderWidth: 1,
+    color: "#7f1d1d",
+    fontSize: 15,
+    fontWeight: "900",
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    textAlign: "center"
+  },
+  deleteConfirmInput: {
+    backgroundColor: "#fffafa",
+    borderColor: "#fecaca",
+    borderRadius: 14,
+    borderWidth: 1,
+    color: "#173b2f",
+    fontSize: 15,
+    paddingHorizontal: 14,
+    paddingVertical: 13
+  },
   detailSection: {
     borderColor: "#e1ece7",
     borderRadius: 16,
@@ -404,5 +492,85 @@ export const styles = StyleSheet.create({
   tabText: { color: "#8a9a94", fontSize: 11, fontWeight: "800" },
   tabTextActive: { color: "#0b6b4f" },
   loading: { alignItems: "center", flex: 1, justifyContent: "center" },
-  loadingText: { color: "#60736c", fontWeight: "700", marginTop: 10 }
+  loadingText: { color: "#60736c", fontWeight: "700", marginTop: 10 },
+  legalWrap: {
+    flexGrow: 1,
+    justifyContent: "center",
+    padding: 18,
+    paddingVertical: 28
+  },
+  legalCard: {
+    backgroundColor: "#fff",
+    borderColor: "#e2ece7",
+    borderRadius: 24,
+    borderWidth: 1,
+    gap: 14,
+    padding: 18,
+    shadowColor: "#224437",
+    shadowOpacity: 0.08,
+    shadowRadius: 18
+  },
+  legalHeaderIcon: {
+    alignItems: "center",
+    alignSelf: "center",
+    backgroundColor: "#eef8f3",
+    borderRadius: 18,
+    height: 52,
+    justifyContent: "center",
+    width: 52
+  },
+  legalTitle: { color: "#123c2f", fontSize: 28, fontWeight: "900", textAlign: "center" },
+  legalIntro: { color: "#60736c", fontSize: 14, lineHeight: 21, textAlign: "center" },
+  legalMetaRow: { flexDirection: "row", flexWrap: "wrap", gap: 8, justifyContent: "center" },
+  legalMeta: {
+    backgroundColor: "#eef6f1",
+    borderRadius: 999,
+    color: "#496159",
+    fontSize: 12,
+    fontWeight: "800",
+    paddingHorizontal: 10,
+    paddingVertical: 5
+  },
+  legalBlock: {
+    borderColor: "#e1ece7",
+    borderRadius: 16,
+    borderWidth: 1,
+    gap: 10,
+    padding: 12
+  },
+  legalBlockTitle: { color: "#123c2f", fontSize: 16, fontWeight: "900" },
+  legalSection: { gap: 3 },
+  legalSectionTitle: { color: "#1f2933", fontSize: 13, fontWeight: "900" },
+  legalSectionText: { color: "#60736c", fontSize: 13, lineHeight: 19 },
+  legalContact: { color: "#0b6b4f", fontSize: 13, fontWeight: "900", textAlign: "center" },
+  legalModalPanel: {
+    backgroundColor: "#fff",
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
+    maxHeight: "82%",
+    padding: 18
+  },
+  legalModalContent: { gap: 12, paddingBottom: 24 },
+  legalCheckRow: {
+    alignItems: "flex-start",
+    backgroundColor: "#f8faf8",
+    borderColor: "#dce9e3",
+    borderRadius: 16,
+    borderWidth: 1,
+    flexDirection: "row",
+    gap: 10,
+    padding: 12
+  },
+  legalCheckbox: {
+    alignItems: "center",
+    borderColor: "#9db8ae",
+    borderRadius: 6,
+    borderWidth: 2,
+    height: 22,
+    justifyContent: "center",
+    marginTop: 1,
+    width: 22
+  },
+  legalCheckboxActive: { backgroundColor: "#0b6b4f", borderColor: "#0b6b4f" },
+  legalCheckText: { color: "#173b2f", flex: 1, fontSize: 13, fontWeight: "800", lineHeight: 19 }
 });
