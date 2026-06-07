@@ -1,3 +1,4 @@
+const { createClerkClient } = require("@clerk/backend");
 const bcrypt = require("bcryptjs");
 const cors = require("cors");
 const dotenv = require("dotenv");
@@ -7,7 +8,14 @@ const { analyzeProduct } = require("./product-analysis");
 const { asyncHandler } = require("./async-handler");
 const { clerkAuth, signToken, verifyClerkSession } = require("./auth");
 const { createScanHistory, getUserHistory, markScanAnalysisError, updateScanAnalysis } = require("./history-service");
-const { createUser, getUserByEmail, upsertClerkUser } = require("./user-service");
+const {
+  acceptCurrentLegal,
+  createUser,
+  deleteUserById,
+  getUserByEmail,
+  hasAcceptedCurrentLegal,
+  upsertClerkUser
+} = require("./user-service");
 const { getCatalogs } = require("./catalog-service");
 const { fetchProduct } = require("./product-service");
 const { getProfile, saveProfile } = require("./profile-service");
@@ -16,6 +24,7 @@ dotenv.config();
 
 const app = express();
 const port = process.env.API_PORT || 4000;
+const DELETE_ACCOUNT_CONFIRMATION = "eliminar la cuenta";
 
 app.use(cors());
 app.use(express.json());
@@ -119,15 +128,60 @@ app.post("/auth/sync", verifyClerkSession, asyncHandler(async (req, res) => {
   res.json({ user });
 }));
 
-app.get("/catalogos", clerkAuth, asyncHandler(async (_req, res) => {
+function requireAcceptedLegal(req, res, next) {
+  if (hasAcceptedCurrentLegal(req.user)) return next();
+  return res.status(428).json({
+    code: "LEGAL_ACCEPTANCE_REQUIRED",
+    error: "Tenes que aceptar los terminos y la politica de privacidad para continuar"
+  });
+}
+
+app.post("/legal/accept", clerkAuth, asyncHandler(async (req, res) => {
+  const user = await acceptCurrentLegal({ userId: req.user.id_usuario });
+  res.json({ user });
+}));
+
+async function deleteClerkAccount(clerkUserId) {
+  if (!clerkUserId) return false;
+  if (!process.env.CLERK_SECRET_KEY) {
+    throw new Error("Falta configurar CLERK_SECRET_KEY para eliminar la cuenta de autenticacion");
+  }
+
+  const clerk = createClerkClient({ secretKey: process.env.CLERK_SECRET_KEY });
+  await clerk.users.deleteUser(clerkUserId);
+  return true;
+}
+
+app.delete("/account", clerkAuth, asyncHandler(async (req, res) => {
+  const confirmation = `${req.body?.confirmation || ""}`.trim();
+  if (confirmation !== DELETE_ACCOUNT_CONFIRMATION) {
+    return res.status(400).json({
+      code: "INVALID_ACCOUNT_DELETE_CONFIRMATION",
+      error: `Escribi "${DELETE_ACCOUNT_CONFIRMATION}" para eliminar tu cuenta`
+    });
+  }
+
+  const clerkUserId = req.user.clerk_user_id;
+  let clerkDeleted = false;
+  try {
+    clerkDeleted = await deleteClerkAccount(clerkUserId);
+  } catch (error) {
+    if (error?.status !== 404) throw error;
+  }
+
+  await deleteUserById(req.user.id_usuario);
+  res.json({ ok: true, clerk_deleted: clerkDeleted });
+}));
+
+app.get("/catalogos", clerkAuth, requireAcceptedLegal, asyncHandler(async (_req, res) => {
   res.json(await getCatalogs());
 }));
 
-app.get("/perfil", clerkAuth, asyncHandler(async (req, res) => {
+app.get("/perfil", clerkAuth, requireAcceptedLegal, asyncHandler(async (req, res) => {
   res.json({ perfil: await getProfile(req.user.id_usuario) });
 }));
 
-app.put("/perfil", clerkAuth, asyncHandler(async (req, res) => {
+app.put("/perfil", clerkAuth, requireAcceptedLegal, asyncHandler(async (req, res) => {
   const {
     edad,
     peso,
@@ -164,7 +218,7 @@ async function runScanAnalysis({ userId, historyId, product, profile }) {
   }
 }
 
-app.post("/scan", clerkAuth, asyncHandler(async (req, res) => {
+app.post("/scan", clerkAuth, requireAcceptedLegal, asyncHandler(async (req, res) => {
   const { codigo_barras } = req.body;
   if (!codigo_barras) return res.status(400).json({ error: "Falta codigo_barras" });
 
@@ -185,12 +239,18 @@ app.post("/scan", clerkAuth, asyncHandler(async (req, res) => {
   });
 }));
 
-app.get("/historial", clerkAuth, asyncHandler(async (req, res) => {
+app.get("/historial", clerkAuth, requireAcceptedLegal, asyncHandler(async (req, res) => {
   res.json({ items: await getUserHistory(req.user.id_usuario) });
 }));
 
 app.use((error, _req, res, _next) => {
   console.error(error);
+  if (error.code === "PRODUCT_NOT_FOUND" || error.status === 404) {
+    return res.status(404).json({
+      code: "PRODUCT_NOT_FOUND",
+      error: "Producto no encontrado"
+    });
+  }
   if (error.code === "23505") {
     return res.status(409).json({ error: "Ya existe un registro con esos datos" });
   }

@@ -21,29 +21,33 @@ if (fs.existsSync(envPath)) {
   console.log("[Expo] Loaded .env");
 }
 
-// Layer 2: Load .env.api-tunnel (overrides .env if tunnel exists)
+const hostMode = process.env.EXPO_HOST_MODE;
+const localEnvPath = path.join(process.cwd(), ".env.local");
+
+function removeGeneratedLocalEnv() {
+  if (!fs.existsSync(localEnvPath)) return;
+
+  const existingContent = fs.readFileSync(localEnvPath, "utf8");
+  if (existingContent.startsWith(generatedLocalEnvMarker)) {
+    fs.unlinkSync(localEnvPath);
+    console.log("[Expo] Removed generated .env.local");
+  }
+}
+
+// Layer 2: Load .env.api-tunnel only when the tunnel command is used.
 const apiTunnelEnvPath = path.join(process.cwd(), ".env.api-tunnel");
-if (fs.existsSync(apiTunnelEnvPath)) {
+if (hostMode === "tunnel" && fs.existsSync(apiTunnelEnvPath)) {
   const tunnelConfig = dotenv.parse(fs.readFileSync(apiTunnelEnvPath));
   Object.assign(env, tunnelConfig);
   console.log(`[Expo] Loaded .env.api-tunnel: ${tunnelConfig.EXPO_PUBLIC_API_URL}`);
 
-  const localEnvPath = path.join(process.cwd(), ".env.local");
   const localEnvContent = `${generatedLocalEnvMarker}\nEXPO_PUBLIC_API_URL=${tunnelConfig.EXPO_PUBLIC_API_URL}\n`;
   fs.writeFileSync(localEnvPath, localEnvContent);
   console.log(`[Expo] Wrote .env.local for Expo with ${tunnelConfig.EXPO_PUBLIC_API_URL}`);
 } else {
-  const localEnvPath = path.join(process.cwd(), ".env.local");
-  if (fs.existsSync(localEnvPath)) {
-    const existingContent = fs.readFileSync(localEnvPath, "utf8");
-    if (existingContent.startsWith(generatedLocalEnvMarker)) {
-      fs.unlinkSync(localEnvPath);
-      console.log("[Expo] Removed generated .env.local");
-    }
-  }
+  removeGeneratedLocalEnv();
 }
 
-const hostMode = process.env.EXPO_HOST_MODE;
 const hostArgs = hostMode === "tunnel"
   ? ["--tunnel"]
   : hostMode === "lan"

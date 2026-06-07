@@ -5,11 +5,19 @@ create table if not exists usuario (
   nombre varchar(120),
   apellido varchar(120),
   password_hash varchar(255),
+  terms_accepted_at timestamp,
+  terms_version varchar(20),
+  privacy_accepted_at timestamp,
+  privacy_version varchar(20),
   created_at timestamp not null default now()
 );
 
 alter table usuario
   add column if not exists clerk_user_id varchar(255),
+  add column if not exists terms_accepted_at timestamp,
+  add column if not exists terms_version varchar(20),
+  add column if not exists privacy_accepted_at timestamp,
+  add column if not exists privacy_version varchar(20),
   alter column password_hash drop not null;
 
 create unique index if not exists idx_usuario_clerk_user_id
